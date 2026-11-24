@@ -60,3 +60,40 @@ export const ProfileR: React.FC<{ mode: Mode; scroll: number; time: number }> = 
     </div>
   );
 };
+
+/**
+ * The full-screen menu at tablet width (834 px), from MegaMenu.jsx's tablet branch: the two-column body is 85% wide,
+ * the nav type is 3vw, captions 13.8 and 16.6 px, footer 14.4 px. Hover does not exist on touch, so nothing reacts
+ * until an item is tapped, and a tap opens that page.
+ */
+const NAV_ITEMS = ["Home", "Collections", "Profile", "Journal", "Contact", "Testimonials"];
+export const MenuT: React.FC<{ t: number; at: number }> = ({ t, at }) => {
+  const w = VIEW.t.w, h = VIEW.t.h;
+  const eo = (u: number) => 1 - Math.pow(1 - Math.max(0, Math.min(1, u)), 4);
+  const cw = w * 0.85, gap = w * 0.08, colW = (cw - gap) / 2;
+  const up = eo((t - at - 0.05) / 0.55);
+  return (
+    <div style={{ position: "absolute", left: 0, top: 0, width: w, height: h, background: INK, color: BG, fontFamily: FONT, display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 56, flexShrink: 0, display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", padding: "0 48px", borderBottom: "1px solid rgba(248,247,244,0.1)", ...nav }}>
+        <div>Contact</div><div style={{ whiteSpace: "nowrap" }}>Look Eyewear &amp; Optometry</div><div style={{ justifySelf: "end" }}>Close ×</div>
+      </div>
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: cw, display: "grid", gridTemplateColumns: "1fr 1fr", gap, alignItems: "center" }}>
+          <div style={{ transform: "scale(0.85)", opacity: up }}>
+            <Img src={staticFile("img/hero.jpg")} style={{ width: colW, height: (colW * 4) / 3, objectFit: "cover", display: "block", transform: `translateY(${16 * (1 - up)}px)` }} />
+            <div style={{ marginTop: 16 }}>
+              <div style={{ fontWeight: 600, fontSize: 13.8, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 6 }}>Look Eyewear</div>
+              <div style={{ fontSize: 16.6, color: "rgba(248,247,244,0.5)", lineHeight: 1.6 }}>Eyewear &amp; Optometry</div>
+            </div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.756em", fontSize: w * 0.03 }} data-nav>
+            {NAV_ITEMS.map((n, i) => <div key={n} style={{ fontWeight: 500, lineHeight: 1.1, color: "rgba(248,247,244,0.25)", opacity: eo((t - at - 0.08 - i * 0.05) / 0.4) }}>{n}</div>)}
+          </div>
+        </div>
+      </div>
+      <div style={{ flexShrink: 0, display: "grid", gridTemplateColumns: "1fr 1fr", alignItems: "end", padding: "24px 48px", borderTop: "1px solid rgba(248,247,244,0.1)", fontSize: 14.4, lineHeight: 1.8 }}>
+        <div>(08) 9783 5060<br />info@lookeyewear.com.au</div><div style={{ justifySelf: "end", textAlign: "right" }}>Instagram<br />Facebook</div>
+      </div>
+    </div>
+  );
+};

@@ -15,7 +15,7 @@ from scipy.signal import lfilter, butter, sosfilt, resample_poly
 
 ROOT = __file__.rsplit("/scripts/", 1)[0]
 SR = 48000
-TRIM = float(sys.argv[1]) if len(sys.argv) > 1 else 0.0
+TRIM = 0.0
 
 def load(path):
     sr, d = wavfile.read(path)
@@ -88,7 +88,10 @@ ev(6.6, "haptic_light")                                    # VAANYARD tile sharp
 for i, t in enumerate([8.0, 8.125, 8.25, 8.375, 8.5, 8.625, 8.75, 8.875]): ev(t, "draw" if i % 2 == 0 else "draw2", "draw")  # journal drawn in
 ev(9.0, "haptic_double")                                   # journal resolves
 ev(9.5, "draw", "draw"); run(9.92, 5, 0.045, PICKS, "pick"); ev(10.42, "draw2", "draw")  # product page sections build
-for t in (11.3, 11.68, 12.04): ev(t, "haptic_light")       # menu hovers
+VERT = "--vertical" in sys.argv
+if VERT: ev(12.18, "haptic")                                # vertical film: one tap on Profile in the tablet menu
+else:
+    for t in (11.3, 11.68, 12.04): ev(t, "haptic_light")   # menu hovers
 ev(15.24, "haptic"); ev(15.6, "haptic"); ev(15.94, "draw2", "draw"); ev(16.0, "haptic_double")  # dashboard build and drop
 run(16.04, 9, 0.04, PICKS, "pick")                         # rows cascade
 ev(16.68, "haptic_light"); run(17.03, 6, 0.045, PICKS, "pick"); ev(17.7, "haptic_light")
@@ -113,7 +116,7 @@ for t, name, role, trim in E:
 out = mix + layer
 pk = np.abs(out).max()
 if pk > 0.98: out *= 0.98 / pk
-wavfile.write(f"{ROOT}/public/audio/mix_sfx.wav", SR, (out * 32767).astype(np.int16))
+wavfile.write(f"{ROOT}/public/audio/mix_sfx_v.wav" if VERT else f"{ROOT}/public/audio/mix_sfx.wav", SR, (out * 32767).astype(np.int16))
 wavfile.write(f"{ROOT}/out/sfx_only.wav", SR, (np.clip(layer, -1, 1) * 32767).astype(np.int16))
 for r in rows: print("%6.2f  %-14s %6.1f" % r)
 print("events", len(rows), "peak before limit", round(float(pk), 3))

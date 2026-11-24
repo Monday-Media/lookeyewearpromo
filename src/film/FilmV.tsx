@@ -3,7 +3,7 @@ import { AbsoluteFill, Audio, staticFile } from "remotion";
 import { useT, Shot, seg, easeOut, easeIn, easeInOut, lerp, rampW, io } from "../kit/kit";
 import { Backdrop, BrowserWindow } from "../kit/Window";
 import { Dash, CmsTable, HomePage, DW, DH, CMS_ROW_H } from "../dash/Dash";
-import { ProfileR, VIEW, Mode } from "../site/Responsive";
+import { ProfileR, MenuT, VIEW, Mode } from "../site/Responsive";
 import { DarkRoom, M } from "./Film";
 
 /** The vertical film: 1080 by 1920, same clock, same cuts, same sound as the 16:9 film. */
@@ -23,8 +23,8 @@ const VStage: React.FC<{ s: number; fx?: number; fy?: number; x?: number; y?: nu
  */
 const SHAPE = [
   { w: 1040, h: 585, bezel: 0, r: 12, bar: 32 },   // desktop: 1440 x 810 page
-  { w: 680, h: 973, bezel: 22, r: 48, bar: 0 },    // tablet: 834 x 1194 page
-  { w: 470, h: 1017, bezel: 15, r: 66, bar: 0 },    // phone: 390 x 844 page
+  { w: 570, h: 816, bezel: 19, r: 40, bar: 0 },    // tablet: 834 x 1194 page
+  { w: 372, h: 805, bezel: 12, r: 52, bar: 0 },    // phone: 390 x 844 page
 ];
 const Device: React.FC<{ u: number; children: (mode: Mode, k: number) => React.ReactNode; swing?: number }> = ({ u, children, swing = 0 }) => {
   const i = Math.min(1, Math.floor(u)), f = u - i;
@@ -68,7 +68,7 @@ const ProfileSnap: React.FC = () => {
   const punch = (at: number) => 0.05 * (1 - easeOut(seg(t, at, at + 0.3))) * (t >= at ? 1 : 0);
   const swing = easeIn(seg(t, 14.35, b));
   const drop = easeIn(seg(t, 14.5, b));
-  const siteY = 730, dashY = 1500;
+  const siteY = 640, dashY = 1500;
   const dk = 1000 / DW;
   return (
     <>
@@ -82,6 +82,43 @@ const ProfileSnap: React.FC = () => {
             {(mode) => { const [t0, s0, v] = SCROLL[mode]; return <ProfileR mode={mode} time={t} scroll={s0 + v * (t - t0)} />; }}
           </Device>
         </div>
+      </VStage>
+    </>
+  );
+};
+
+/** A plain tablet or phone holding a page, centred on (VW/2, cy). `w` is its on-screen width. */
+const Slab: React.FC<{ mode: "t" | "m"; w: number; cy?: number; children: React.ReactNode }> = ({ mode, w, cy = CY, children }) => {
+  const v = VIEW[mode], k = w / v.w, h = v.h * k, bezel = mode === "t" ? w * 0.034 : w * 0.032, r = mode === "t" ? w * 0.07 : w * 0.14;
+  return (
+    <div style={{ position: "absolute", left: (VW - w) / 2 - bezel, top: cy - h / 2 - bezel, width: w + bezel * 2, height: h + bezel * 2, borderRadius: r + bezel * 0.4, background: "#0e0f11", boxShadow: "0 60px 140px rgba(0,0,0,0.6), 0 12px 32px rgba(0,0,0,0.4)" }}>
+      <div style={{ position: "absolute", left: bezel, top: bezel, width: w, height: h, borderRadius: r - bezel * 0.6, overflow: "hidden" }}>
+        <div style={{ transformOrigin: "0 0", transform: `scale(${k})` }}>{children}</div>
+      </div>
+    </div>
+  );
+};
+
+/** 11.0 to 12.4: the menu on a tablet. A ramp in toward the list on "No template", then a tap on Profile takes the cut. */
+export const TAP = 12.18;
+const MenuTablet: React.FC = () => {
+  const t = useT();
+  const a = 11.0, b = 12.4;
+  const w = rampW(t, 11.62, 0.44, a);
+  const TW = 840, k = TW / VIEW.t.w;
+  const top = CY - (VIEW.t.h * k) / 2, left = (VW - TW) / 2;
+  // Profile is the third item. Its place on the tablet page: the list is centred in the body.
+  const bodyH = VIEW.t.h - 56 - 100, fs = VIEW.t.w * 0.03, pitch = fs * 1.1 + fs * 0.756, listH = fs * 1.1 * 6 + fs * 0.756 * 5;
+  const px = VIEW.t.w * 0.075 + (VIEW.t.w * 0.85 - VIEW.t.w * 0.08) / 2 + VIEW.t.w * 0.08 + 46, py = 56 + (bodyH - listH) / 2 + pitch * 2 + fs * 0.55;
+  const fx = left + px * k, fy = top + py * k;
+  const press = easeOut(seg(t, TAP, TAP + 0.1)) * (1 - seg(t, TAP + 0.12, TAP + 0.3));
+  const dotIn = easeOut(seg(t, TAP - 0.34, TAP - 0.04));
+  return (
+    <>
+      <Backdrop src="img/hero.jpg" scale={1.5 + 0.02 * (t - a)} dim={0.5} blur={10} />
+      <VStage s={Math.exp(Math.log(1.55) * w) * io(t, a, b, 1.4, 1.5, 0.36, 0.2)} fx={lerp(VW / 2, fx - 40, w)} fy={lerp(CY, fy, w)}>
+        <Slab mode="t" w={TW}><MenuT t={t} at={a - 0.3} /></Slab>
+        <div style={{ position: "absolute", left: fx - 30 + 80 * (1 - dotIn), top: fy - 30 + 120 * (1 - dotIn), width: 60, height: 60, borderRadius: 30, background: "rgba(255,255,255,0.3)", border: "1.5px solid rgba(255,255,255,0.55)", opacity: dotIn, transform: `scale(${1 - 0.28 * press})`, boxShadow: press > 0.05 ? `0 0 0 ${18 * press}px rgba(255,255,255,${0.12 * (1 - press)})` : undefined }} />
       </VStage>
     </>
   );
@@ -113,8 +150,9 @@ const DashBuildV: React.FC = () => {
 
 export const FilmV: React.FC<{ sound?: boolean }> = ({ sound = true }) => (
   <AbsoluteFill style={{ background: "#000" }}>
+    <Shot a={11.0} b={12.4} bg="#111"><MenuTablet /></Shot>
     <Shot a={12.4} b={M.dip2}><ProfileSnap /></Shot>
     <Shot a={M.dip2} b={16.5}><DashBuildV /></Shot>
-    {sound && <Audio src={staticFile("audio/mix_sfx.wav")} />}
+    {sound && <Audio src={staticFile("audio/mix_sfx_v.wav")} />}
   </AbsoluteFill>
 );
