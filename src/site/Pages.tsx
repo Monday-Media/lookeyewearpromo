@@ -16,12 +16,13 @@ const nav: React.CSSProperties = { fontWeight: 600, fontSize: 13, letterSpacing:
  * picture eases in from a soft enlarged blur and the letters rise out of a mask one after another. The intro is played
  * a quarter faster than the site plays it. The site's film grain is left out.
  */
-const Word: React.FC<{ text: string; tau: number; delay: number }> = ({ text, tau, delay }) => (
-  <span style={{ display: "inline-flex", overflow: "hidden", paddingBottom: "0.04em", color: BG, fontWeight: 500, fontSize: SITE_W * 0.0805, lineHeight: 1, letterSpacing: "-0.01em" }}>
+const Word: React.FC<{ text: string; tau: number; delay: number; vw?: number }> = ({ text, tau, delay, vw = SITE_W }) => (
+  <span style={{ display: "inline-flex", overflow: "hidden", paddingBottom: "0.04em", color: BG, fontWeight: 500, fontSize: vw * 0.0805, lineHeight: 1, letterSpacing: "-0.01em" }}>
     {text.split("").map((ch, i) => <span key={i} style={{ display: "inline-block", transform: `translateY(${105 * (1 - easeOut(seg(tau, delay + i * 0.055, delay + i * 0.055 + 1.25)))}%)` }}>{ch}</span>)}
   </span>
 );
-export const Hero: React.FC<{ t: number; at?: number; open?: number }> = ({ t, at = -9, open = 0 }) => {
+export const Hero: React.FC<{ t: number; at?: number; open?: number; vw?: number }> = ({ t, at = -9, open = 0, vw = SITE_W }) => {
+  const mob = vw < 768;
   const tau = (t - at) * 1.25;
   const im = easeOut(seg(tau, 0, 2.2));
   const c = lerp(25, 0, open);
@@ -31,12 +32,12 @@ export const Hero: React.FC<{ t: number; at?: number; open?: number }> = ({ t, a
         <Img src={staticFile("img/hero.jpg")} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: im, transform: `scale(${lerp(1.14, 1, im) + 0.003 * Math.max(0, t - at)})`, filter: im < 1 ? `blur(${14 * (1 - im)}px)` : undefined }} />
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(120% 90% at 50% 45%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.42) 100%)" }} />
       </div>
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 56, display: "grid", gridTemplateColumns: "auto 1fr auto", alignItems: "center", padding: "0 48px", color: BG, fontWeight: 600, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", opacity: seg(tau, 0.7, 1.6) }}>
-        <div>Contact</div><div style={{ justifySelf: "center", letterSpacing: "0.32em", fontWeight: 500 }}>Look Eyewear &amp; Optometry</div><div>Menu</div>
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 56, display: "grid", gridTemplateColumns: "auto 1fr auto", alignItems: "center", padding: mob ? "0 24px" : "0 48px", color: BG, fontWeight: 600, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", opacity: seg(tau, 0.7, 1.6) }}>
+        <div>{mob ? "Look Eyewear" : "Contact"}</div><div style={{ justifySelf: "center", letterSpacing: "0.32em", fontWeight: 500 }}>{mob ? "" : "Look Eyewear & Optometry"}</div><div>Menu</div>
       </div>
       <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", columnGap: SITE_W * 0.04, width: `${lerp(56, 100, open)}%`, minWidth: "max-content" }}>
-          <Word text="LOOK" tau={tau} delay={0.25} /><Word text="EYEWEAR" tau={tau} delay={0.45} />
+        <div style={{ display: "flex", justifyContent: "space-between", columnGap: vw * 0.04, width: `${lerp(56, 100, open)}%`, minWidth: "max-content" }}>
+          <Word text="LOOK" tau={tau} delay={0.25} vw={vw} /><Word text="EYEWEAR" tau={tau} delay={0.45} vw={vw} />
         </div>
       </div>
     </div>
@@ -113,7 +114,7 @@ const POSTS: [string, string, string, string, string][] = [
   ["APRIL 20TH", "NEW PRODUCT", "j3", "The Timeless Appeal of Independent Eyewear Over High Street Choices", "Choosing eyewear is more than a practical decision. For style-conscious professionals, it reflects taste, values, and attention to detail. The high street offers convenience and volume, but independent eyewear holds a..."],
 ];
 const RULE = "1px solid rgba(188,190,192,0.7)";
-export const Journal: React.FC<{ t: number; plan?: number[]; hold?: number; scroll?: number }> = ({ t, plan, hold = -9, scroll = 0 }) => {
+export const Journal: React.FC<{ t: number; plan?: number[]; hold?: number; scroll?: number; h1?: number }> = ({ t, plan, hold = -9, scroll = 0, h1 = 90 }) => {
   let n = 0;
   const P: React.FC<{ sk: React.ReactNode; style?: React.CSSProperties; children: React.ReactNode }> = ({ sk, style, children }) => {
     const i = n++;
@@ -127,7 +128,7 @@ export const Journal: React.FC<{ t: number; plan?: number[]; hold?: number; scro
         <div style={{ height: 56 }} />
         <div style={{ padding: "48px 48px 0" }}>
           <P sk={bar(104, 8)} style={{ marginBottom: 12, height: 12 }}><div style={label}>Design Philosophy</div></P>
-          <P sk={bar(330, 72, 8, 0.2)} style={{ height: 90, marginBottom: 16 }}><div style={{ fontWeight: 600, fontSize: 90, lineHeight: 1, textTransform: "uppercase" }}>Journal</div></P>
+          <P sk={bar(h1 * 3.7, h1 * 0.8, h1 * 0.09, 0.2)} style={{ height: h1, marginBottom: 16 }}><div style={{ fontWeight: 600, fontSize: h1, lineHeight: 1, textTransform: "uppercase" }}>Journal</div></P>
           <P sk={bar(560, 9, 6)} style={{ height: 21, marginBottom: 48 }}><div style={{ fontSize: 13, lineHeight: 1.6, color: "rgba(17,17,17,0.5)" }}>About LOOK and what we stand for. Inspired by modern frameworks, editorial designs, and meticulous attention to detail.</div></P>
           {line(plan ? plan[2] + 0.06 : 0)}
         </div>

@@ -97,3 +97,75 @@ export const MenuT: React.FC<{ t: number; at: number }> = ({ t, at }) => {
     </div>
   );
 };
+
+/* ───── Gallery at any width. Four columns from 768 px up; two below that (ParallaxGallery.jsx). ───── */
+import items from "./gallery.json";
+const gset = (vw: number) => { const mob = vw < 768; const n = mob ? 2 : 4; const gap = mob ? 24 : 40; const colW = (vw - gap * (n - 1)) / n; return { mob, n, gap, colW, tileH: (colW * 16) / 9, speeds: mob ? [9.36, 14.04] : [6, 12, 3, 9] }; };
+/** On phones, items tagged for columns 1 and 2 keep them; the rest are dealt out alternately, as the site does. */
+const gcols = (vw: number): any[][] => {
+  const g = gset(vw); const cols: any[][] = Array.from({ length: g.n }, () => []); const rest: any[] = [];
+  for (const it of items as any[]) (it.c <= g.n ? cols[it.c - 1] : rest).push(it);
+  rest.forEach((it, i) => cols[i % g.n].push(it));
+  return cols;
+};
+const gy = (vw: number, time: number, ci: number) => { const g = gset(vw); return (time * g.speeds[ci] + ci * 137) % (gcols(vw)[ci].length * (g.tileH + g.gap)); };
+export const gTile = (vw: number, time: number, ci: number, ri: number, scroll = 0) => { const g = gset(vw); return { x: ci * (g.colW + g.gap) + g.colW / 2, y: 56 + g.gap - scroll - gy(vw, time, ci) + ri * (g.tileH + g.gap) + g.tileH / 2, w: g.colW, h: g.tileH }; };
+export const gFind = (vw: number, title: string) => { const cols = gcols(vw); for (let ci = 0; ci < cols.length; ci++) { const ri = cols[ci].findIndex((i) => i.t === title); if (ri >= 0) return { ci, ri, n: cols[ci].length }; } return { ci: 0, ri: 0, n: 1 }; };
+export const GalleryR: React.FC<{ vw: number; time: number; scroll?: number; hover?: { col: number; row: number; amt: number }[] }> = ({ vw, time, scroll = 0, hover = [] }) => {
+  const g = gset(vw); const cols = gcols(vw);
+  return (
+    <div style={{ position: "absolute", inset: 0, background: BG, fontFamily: FONT, overflow: "hidden" }}>
+      <div style={{ position: "absolute", top: 56 + g.gap - scroll, left: 0, right: 0, display: "grid", gridTemplateColumns: `repeat(${g.n}, 1fr)`, gap: g.gap }}>
+        {cols.map((col, ci) => (
+          <div key={ci} style={{ display: "flex", flexDirection: "column", gap: g.gap, transform: `translateY(${-gy(vw, time, ci)}px)` }}>
+            {[...col, ...col, ...col].map((it, ri) => {
+              const hv = hover.filter((x) => x.col === ci && x.row === ri).reduce((mx, x) => Math.max(mx, x.amt), 0);
+              return (
+                <div key={ri} style={{ position: "relative", width: "100%", height: g.tileH, overflow: "hidden", flexShrink: 0 }}>
+                  <Img src={staticFile(`img/${it.id}.jpg`)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: `blur(${4 * (1 - hv)}px)`, transform: `scale(${1 + 0.02 * hv})` }} />
+                  <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "40px 12px 12px", background: "linear-gradient(to top, rgba(17,17,17,0.55), rgba(17,17,17,0))", opacity: hv }}>
+                    <div style={{ fontWeight: 600, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: BG }}>{it.t}</div>
+                    {it.s && <div style={{ fontSize: 11, color: "rgba(248,247,244,0.8)", marginTop: 4, lineHeight: 1.4 }}>{it.s}</div>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 56, background: "rgba(248,247,244,0.78)", backdropFilter: "blur(16px) saturate(140%)", borderBottom: "1px solid rgba(188,190,192,0.55)", display: "grid", gridTemplateColumns: g.mob ? "auto 1fr auto" : "1fr auto 1fr", alignItems: "center", padding: g.mob ? "0 24px" : "0 48px", fontWeight: 600, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: INK }}>
+        <div>{g.mob ? "Look Eyewear" : "Contact"}</div><div style={{ letterSpacing: "0.32em", fontWeight: 500 }}>{g.mob ? "" : "Look Eyewear & Optometry"}</div><div style={{ justifySelf: "end" }}>Menu</div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * The VAANYARD product page at phone width as one long sheet, from the mobile branches of ProductHero,
+ * ProductDescription, DragGallery (57.6vw square tiles, 24 px apart), ClosingImage (square) and FeatureGrid (one column).
+ */
+const MW = 390;
+export const LM = { heroH: 693, desc: 693, descH: 372, strip: 1065, stripH: 225, close: 1065 + 225 + 48, closeH: 342, feat: 1065 + 225 + 48 + 342, h: 1065 + 225 + 48 + 342 + 300 };
+const STRIPM = ["vaanyard_hero", "v_7248a5773fe049e8ac6a76d01816da6c", "v_53cbab39b95a4691aa414106e3e29f96", "v_87805d23a9ed40968cec4db1dfa7e810", "v_131071a4c3714bc49065bac0214c06b4", "v_0f392e3e1bde45b9994bc03d44978a25", "v_1fa4dea70ef34ea0b1edb18be7b7c3e1"];
+export const ProductLongM: React.FC<{ hero: React.ReactNode; reveal?: (i: number) => number; stripX?: number }> = ({ hero, reveal = () => 1, stripX = 0 }) => {
+  const sec = (i: number, style: React.CSSProperties, node: React.ReactNode) => { const u = reveal(i); return <div style={{ position: "absolute", ...style, opacity: Math.min(1, u * 1.6), transform: `translateY(${28 * (1 - u)}px) scale(${1.04 - 0.04 * u})`, filter: u < 1 ? `blur(${8 * (1 - u)}px)` : undefined }}>{node}</div>; };
+  const tw = MW * 0.576;
+  return (
+    <div style={{ position: "absolute", left: 0, top: 0, width: MW, height: LM.h, background: BG, color: INK, fontFamily: FONT, overflow: "hidden", boxShadow: "0 80px 180px rgba(0,0,0,0.6)" }}>
+      <div style={{ position: "absolute", left: 0, top: 0, width: MW, height: LM.heroH }}>{hero}</div>
+      {sec(0, { left: 24, right: 24, top: LM.desc + 48 }, (
+        <div>
+          <div style={{ fontWeight: 600, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(17,17,17,0.4)", paddingTop: 6, marginBottom: 24 }}>Design Philosophy</div>
+          <div style={{ fontWeight: 500, fontSize: 22, lineHeight: 1.05, textTransform: "uppercase" }}>Bold 41g frames, 300-day aged acetate.</div>
+          <div style={{ ...P, marginTop: 24 }}>VAANYARD is an independent premium eyewear brand designed in Sydney and made in Japan. The bold "heavy-look" thicker profile frames only weigh 41 grams. Vaanyard has its frames manufactured from a selection of "aged" Japanese acetate.</div>
+          <div style={{ ...nav, marginTop: 32 }}>Enquire Now</div>
+        </div>
+      ))}
+      {sec(1, { left: 0, top: LM.strip, width: MW, height: LM.stripH }, [...STRIPM, ...STRIPM, ...STRIPM].map((id, i) => <Img key={i} src={staticFile(`img/${id}.jpg`)} style={{ position: "absolute", top: 0, left: i * (tw + 24) + stripX, width: tw, height: tw, objectFit: "cover" }} />))}
+      {sec(2, { left: 24, top: LM.close, width: MW - 48, height: LM.closeH }, <Img src={staticFile("img/v_1fa4dea70ef34ea0b1edb18be7b7c3e1.jpg")} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />)}
+      {sec(3, { left: 24, right: 24, top: LM.feat + 32 }, [["Craftsmanship", "300-day aged Japanese acetate construction."], ["Material", "300-day aged premium Japanese acetate."], ["Design Influence", "Sydney independent design, Japanese precision manufacturing."]].map(([l, v]) => (
+        <div key={l} style={{ marginBottom: 24 }}><div style={{ fontWeight: 600, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(17,17,17,0.4)", marginBottom: 8 }}>{l}</div><div style={{ fontSize: 13, lineHeight: 1.6 }}>{v}</div></div>
+      )))}
+    </div>
+  );
+};

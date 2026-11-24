@@ -25,3 +25,13 @@
 - Sound v5: all levels down 10 to 14 LU, first hover sound and the 13.5 whoosh removed, the stack lift is a soft tone not a swell, single haptic on the logo.
 - Profile page (12.4 to 15.06) now includes the sliding picture strip (the ten real ProfileGallery pictures) and the founders' section, and scrolls down through them. The strip's speed (46 px a second) and its left-to-right direction are set by eye and from Paul's description; the site's own figures have not been read.
 - End card is "Perth WA" with equal gaps between pin, Perth and WA. Sounds between 16 and 19 seconds are a further 6 dB down.
+
+## Vertical film (FilmV, 1080 x 1920), draft v1
+- Same clock, cuts and sound as the 16:9 film. The only sound change is the menu: one tap at 12.18 in place of three hovers (public/audio/mix_sfx_v.wav, made with scripts/sfx.py --vertical).
+- Site scenes are on a phone (390 px page) or a tablet (834 px page). Layouts follow the site's own code: two gallery columns under 768 px, the mobile header, the mobile product page sizes, the Profile and menu tablet rules. They have not been checked against screenshots from real devices.
+- Phone and tablet are plain shapes drawn in code. The phone's address bar and padlock (21.0) are drawn in code.
+- Tablet menu: items do not react to the tap. The code only gives them a hover response; what the live site does on touch is not confirmed.
+- Profile strip uses the site's real figures here (right to left, 32 px a second, 24 on phones). The 16:9 film still runs it left to right at 46.
+- Mobile product page sheet: section heights are set by hand. Sections fade up as the camera reaches them (no wireframe stage in this version).
+- Dashboard shots stay desktop at full size with the camera on the relevant part; the rest falls outside the frame.
+- Backdrops are darker (dim 0.74 or more) and softer than the 16:9 ones (Paul, 24 Nov).
