@@ -368,8 +368,8 @@ const FinaleV: React.FC = () => {
   ];
   return (<><VB t={t} a={a} dim={lerp(0.74, 0.86, e) + 0.14 * clear} />
     <div style={{ position: "absolute", inset: 0, perspective: 2600, perspectiveOrigin: "50% 50%", opacity: 1 - clear }}>
-      <div style={{ position: "absolute", left: (VW - pw) / 2, top: CY - ph / 2, width: pw, height: ph, transformStyle: "preserve-3d", transform: `translate(${-40 * e}px, ${-120 * e}px) scale(${sIn * lerp(1.12, 0.78, e) * (1 + 0.012 * (t - a)) * (1 + 1.6 * clear)}) rotateX(${50 * e}deg) rotateZ(${e * (-30 + 2.2 * (t - 27))}deg)` }}>
-        {[3, 2, 1, 0].map((i) => <div key={i} style={{ position: "absolute", left: 0, top: 0, width: pw, height: ph, transform: `translate(${i * 70 * e}px, ${i * 150 * e}px) translateZ(${(1.5 - i) * 200 * e * (1 + 2.5 * clear)}px)`, filter: i ? `brightness(${1 - 0.1 * i * e})` : undefined, opacity: i && e < 0.02 ? 0 : 1 }}>{layers[i]}</div>)}
+      <div style={{ position: "absolute", left: (VW - pw) / 2, top: CY - ph / 2, width: pw, height: ph, transformStyle: "preserve-3d", transform: `translate(${-37 * e}px, ${-130 * e}px) scale(${sIn * lerp(1.12, 0.78, e) * (1 + 0.012 * (t - a)) * (1 + 1.6 * clear)}) rotateX(${50 * e}deg) rotateZ(${e * (-30 + 2.2 * (t - 27))}deg)` }}>
+        {[3, 2, 1, 0].map((i) => <div key={i} style={{ position: "absolute", left: 0, top: 0, width: pw, height: ph, transform: `translate(${(i ? (i - 2) * 50 + 30 : 0) * e}px, ${(i ? (i - 2) * 170 + 150 : 0) * e}px) translateZ(${(1.5 - i) * 200 * e * (1 + 2.5 * clear)}px) scale(${i ? 1 + 0.13 * e : 1 - 0.2 * e})`, filter: i ? `brightness(${1 - 0.1 * i * e})` : undefined, opacity: i && e < 0.02 ? 0 : 1 }}>{layers[i]}</div>)}
       </div>
     </div></>);
 };
