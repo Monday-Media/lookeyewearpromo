@@ -1,4 +1,4 @@
-# What is stood in (full draft v3)
+# What is stood in (draft v4)
 
 - Wix dashboard: rebuilt from Paul's nine screenshots, not from Wix's code. Colours are sampled from the screenshots. Sizes and spacing are measured by eye.
 - Dashboard typeface: Wix Madefor Text. This looks right against the screenshots but has not been confirmed as the font Wix serves in the dashboard.
@@ -15,8 +15,8 @@
 - Analytics figures and their sparklines are invented.
 - Home hero: ported from HomeHero.jsx. The intro plays a quarter faster than on the site. The film grain and the slow 22 second picture drift are left out. The header's fade-in timing is a guess.
 - The hero picture is the site's own file, which is 1024 by 576, so it is soft when it fills the frame.
-- Menu: ported from MegaMenu.jsx. The items come in faster than on the site. No pointer is drawn.
-- The site's pill cursor is not drawn anywhere in the film.
-- "Drawn from a blank canvas": the wireframe is a plain outline of the real product hero (header, picture, label, title).
+- Menu (11.0 to 12.4): ported from MegaMenu.jsx. The pointer visits Collections, Profile and Journal. The items and hover responses move faster than the site's springs. The pointer is the site's frosted pill with no label; whether the pill shows on menu links on the live site is not confirmed.
+- "Drawn from a blank canvas" (8.0 to 9.5): the Journal page, ported from Journal.jsx with the three real posts read from the Wix blog (read only). It is drawn as a wireframe eight parts a second and resolves at 9.0. Only the first post row is drawn as wireframe; the others are below the window until the scroll.
 - Closing stack (26.9 to 29.0): the site window with the dashboard home, the CMS table and the contacts beneath it. The arrangement is invented for the line "with nothing missing underneath".
-- Wix Studio logo at 29.0 to 31.0: placed there by Claude, not confirmed with Paul. Monday Media logo at 31.0.
+- End card (29.0 to 31.0): a pin and "perth wa" (Paul, 24 Nov; no Wix Studio logo). Set in Outfit, bold then light, lowercase and tight like the logo. Outfit is a near match by eye; the logo's own typeface has not been identified. Monday Media logo at 31.0.
+- Sound design (scripts/sfx.py): Flare haptic palette C2 plus four sounds made in code (lock, counter tick, draw tick, soft swell). Levels are measured, not heard.

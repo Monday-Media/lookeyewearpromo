@@ -11,3 +11,5 @@ Shots (draft v3): 0 Open, 2.0 HeroWide, 3.0 GalleryTilt (ramps 3.5, 4.0), 4.3 Da
 17.0 ContactsWide, 17.5 ContactsMacro, 18.0 Marketing, 19.0 ItemMacro, 19.5 ProductWide, 20.5 AnalyticsMacro, 21.0 Padlock, 22.0 SideBySide,
 24.0 GalleryTilt (ramp 24.25), 24.5 CmsWhip (ramp 24.75), 25.0 StripMacro (ramp 25.4), 25.8 Finale (ramp 26.92, clear 28.72 to 29.0), 29.0 Wix Studio, 31.0 Monday Media.
 Crash zooms: one only (Padlock, 21.0). Everything else is a speed ramp or a fast in and out on a hard cut.
+
+Draft v4 changes: 8.0 Canvas now draws the Journal page (parts at 8.0 to 8.875 every 0.125, resolve 9.0, scroll ramp 9.28). LongPage ends at 11.0. Menu runs 11.0 to 12.4 with hovers at 11.3, 11.68, 12.04. 29.0 is the "perth wa" card.

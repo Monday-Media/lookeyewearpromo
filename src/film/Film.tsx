@@ -3,7 +3,9 @@ import { AbsoluteFill, Audio, staticFile } from "remotion";
 import { useT, Shot, shotCam, seg, easeOut, easeIn, easeInOut, lerp, rampW, io, W, H } from "../kit/kit";
 import { Backdrop, BrowserWindow } from "../kit/Window";
 import { Gallery, SITE_W, SITE_H, tilePos, tileRow } from "../site/Gallery";
-import { Hero, MegaMenu, ProductLong, CanvasBuild, LONG } from "../site/Pages";
+import { Hero, MegaMenu, MENU_X, MENU_Y, ProductLong, Journal, LONG } from "../site/Pages";
+import "@fontsource/outfit/200.css";
+import "@fontsource/outfit/800.css";
 import { Img, staticFile as sf } from "remotion";
 import { Dash, CmsTable, CmsItem, ITEM_IMAGE, Contacts, HomePage, Flyout, Arrow, DW, DH, navY, CMS_ROW_H, CONTACT_ROW_H } from "../dash/Dash";
 import { ProductPage } from "../site/Product";
@@ -327,46 +329,52 @@ const GalleryFind: React.FC = () => {
   );
 };
 
-/** 8.0 to 9.5: a blank canvas. The product page is drawn on it piece by piece on the beats, then resolves. */
+/** 8.0 to 9.5: a blank canvas. The Journal page is drawn on it part by part, eight parts a second, then resolves at 9.0. */
+export const DRAW = [8.0, 8.125, 8.25, 8.375, 8.5, 8.625, 8.75, 8.875];
 const Canvas: React.FC = () => {
   const t = useT();
   const a = 8.0, b = 9.5;
-  const jolt = (at: number, k = 0.03) => k * (1 - easeOut(seg(t, at, at + 0.22))) * (t >= at ? 1 : 0);
+  const jolt = (at: number, k = 0.014) => k * (1 - easeOut(seg(t, at, at + 0.16))) * (t >= at ? 1 : 0);
   const out = easeIn(seg(t, b - 0.24, b));
-  const s = lerp(0.9, 1, easeInOut(seg(t, a, 9.0))) + jolt(8.0, 0.12) + jolt(8.25) + jolt(8.5) + jolt(8.75) + jolt(9.0, 0.05) + 0.012 * Math.max(0, t - 9) + 0.5 * out;
+  const w = rampW(t, 9.28, 0.36, 9.0);
+  const s = lerp(0.92, 1, easeInOut(seg(t, a, 9.0))) + jolt(8.0, 0.1) + DRAW.slice(1).reduce((m, x) => m + jolt(x), 0) + jolt(9.0, 0.05) + 0.012 * Math.max(0, t - 9) + 0.5 * out;
   return (
     <>
       <Backdrop src="img/hero.jpg" scale={1.14 + 0.02 * (t - a)} dim={0.42} blur={8} />
-      <Stage s={s} y={-360 * out}><SiteWindow><CanvasBuild t={t} beats={[8.0, 8.25, 8.5, 8.75]} hold={9.0} /></SiteWindow></Stage>
+      <Stage s={s} y={-360 * out}><SiteWindow><Journal t={t} plan={DRAW} hold={9.0} scroll={330 * w} /></SiteWindow></Stage>
     </>
   );
 };
 
-/** 9.5 to 11.5: the rest of the page as one long sheet at a tilt. Each section builds as the camera ramps down to it. */
+/** 9.5 to 11.0: the product page as one long sheet at a tilt. Each section builds as the camera ramps down to it. */
 const PX = (W - SITE_W) / 2;
 const LongPage: React.FC = () => {
   const t = useT();
-  const a = 9.5, b = 11.5;
-  const w1 = rampW(t, 10.0, 0.44, a), w2 = rampW(t, 10.5, 0.44, 10.0), w3 = rampW(t, 11.0, 0.44, 10.5);
-  const k = (v: number[]) => v[0] + (v[1] - v[0]) * w1 + (v[2] - v[1]) * w2 + (v[3] - v[2]) * w3;
-  const sc = Math.exp(k([1.55, 1.5, 1.02, 1.32].map(Math.log)));
+  const a = 9.5, b = 11.0;
+  const w1 = rampW(t, 10.0, 0.44, a), w2 = rampW(t, 10.5, 0.44, 10.0);
+  const k = (v: number[]) => v[0] + (v[1] - v[0]) * w1 + (v[2] - v[1]) * w2;
+  const sc = Math.exp(k([1.55, 1.5, 1.02].map(Math.log)));
   return (
     <>
       <Backdrop src="img/hero.jpg" scale={1.2} y={-30 * (t - a)} dim={0.6} blur={9} />
-      <Stage s={sc * io(t, a, b, 1.4, 1.5)} fx={PX + k([560, 720, 720, 720])} fy={k([LONG.desc + 190, LONG.strip + 146, LONG.close + 378, LONG.feat + 40])} rx={k([24, 20, 10, 22])} r={k([-5, -3, -7, -2])} y={90 * (1 - easeOut(seg(t, a, a + 0.34)))}>
-        <div style={{ position: "absolute", left: PX, top: 0 }}><ProductLong t={t} plan={{ desc: a - 0.04, strip: 9.92, close: 10.42, feat: 10.92 }} stripX={-120 - 70 * (t - a)} /></div>
+      <Stage s={sc * io(t, a, b, 1.4, 1.5)} fx={PX + k([560, 720, 720])} fy={k([LONG.desc + 190, LONG.strip + 146, LONG.close + 378])} rx={k([24, 20, 10])} r={k([-5, -3, -7])} y={90 * (1 - easeOut(seg(t, a, a + 0.34)))}>
+        <div style={{ position: "absolute", left: PX, top: 0 }}><ProductLong t={t} plan={{ desc: a - 0.04, strip: 9.92, close: 10.42 }} stripX={-120 - 70 * (t - a)} /></div>
       </Stage>
     </>
   );
 };
 
-/** 11.5 to 12.4: the full-screen menu. Nothing about it comes from a template. */
+/** 11.0 to 12.4: the full-screen menu. The pointer visits Collections, Profile and Journal and each one answers. */
+export const HOVERS: [number, number, number] = [11.3, 11.68, 12.04];
 const Menu: React.FC = () => {
   const t = useT();
-  const a = 11.5, b = 12.4;
-  const c = shotCam(t, a, b, { from: { s: 1.5, x: -260 }, hold: { s: 1.06, x: -60 }, to: { s: 1.5, x: -420, y: 120 }, inDur: 0.36, outDur: 0.24, drift: { s: 0.03 } });
+  const a = 11.0, b = 12.4;
+  const c = shotCam(t, a, b, { from: { s: 1.5, x: -260 }, hold: { s: 1.1, x: -110 }, to: { s: 1.5, x: -420, y: 120 }, inDur: 0.36, outDur: 0.22, drift: { s: 0.03 } });
+  const pts: [number, number][] = [[MENU_X + 330, MENU_Y(0) - 70], [MENU_X + 285, MENU_Y(1) + 8], [MENU_X + 190, MENU_Y(2) + 8], [MENU_X + 215, MENU_Y(3) + 8]];
+  let px = pts[0][0], py = pts[0][1];
+  HOVERS.forEach((h, i) => { const u = easeInOut(seg(t, h - 0.2, h + 0.04)); px += (pts[i + 1][0] - pts[i][0]) * u; py += (pts[i + 1][1] - pts[i][1]) * u; });
   return (
-    <Stage s={c.s} x={c.x} y={c.y}><FullSite><MegaMenu t={t} at={a - 0.34} hover={easeOut(seg(t, 11.82, 12.2))} /></FullSite></Stage>
+    <Stage s={c.s} x={c.x} y={c.y}><FullSite><MegaMenu t={t} at={a - 0.34} hovers={HOVERS} pointer={{ x: px, y: py, o: seg(t, a + 0.04, a + 0.2) }} /></FullSite></Stage>
   );
 };
 
@@ -431,20 +439,26 @@ const Finale: React.FC = () => {
   );
 };
 
-/** 29.0 to the end: Wix Studio, then the Monday Media logo on the last marker, held in silence. */
+/** 29.0 to the end: where we are (a pin and "perth wa", set like the logo), then the Monday Media logo, held in silence. */
 const Logos: React.FC = () => {
   const t = useT();
-  const logo = (at: number, until: number, src: string, w: number) => {
+  const piece = (at: number, until: number, node: React.ReactNode) => {
     if (t < at || t >= until) return null;
     const u = easeOut(seg(t, at, at + 0.5));
     const o = easeIn(seg(t, until - 0.22, until));
-    return <Img src={sf(src)} style={{ position: "absolute", left: (W - w) / 2, top: "50%", width: w, transform: `translateY(-50%) scale(${lerp(1.22, 1, u) * (1 + 0.01 * (t - at)) * lerp(1, 0.86, o)})`, opacity: seg(t, at, at + 0.1) * (1 - o), filter: u < 1 ? `blur(${10 * (1 - u)}px)` : undefined }} />;
+    return <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", transform: `scale(${lerp(1.22, 1, u) * (1 + 0.01 * (t - at)) * lerp(1, 0.86, o)})`, opacity: seg(t, at, at + 0.1) * (1 - o), filter: u < 1 ? `blur(${10 * (1 - u)}px)` : undefined }}>{node}</div>;
   };
+  const drop = easeOut(seg(t, 29.0, 29.36));
   return (
     <>
       <DarkRoom glow={0.8} />
-      {logo(29.0, 31.0, "brand/wix_studio_landscape.svg", 520)}
-      {logo(31.0, 99, "brand/mm_white.svg", 660)}
+      {piece(29.0, 31.0, (
+        <div style={{ display: "flex", alignItems: "center", gap: 26, color: "#fff", fontFamily: "'Outfit', sans-serif", fontSize: 96, letterSpacing: "-0.045em", lineHeight: 1 }}>
+          <svg width="62" height="84" viewBox="0 0 62 84" style={{ transform: `translateY(${-46 * (1 - drop)}px)`, marginTop: 6 }}><path d="M31 0C13.900 0 0 13.700 0 30.600 0 53.200 31 84 31 84s31-30.800 31-53.400C62 13.700 48.100 0 31 0z" fill="#ee1d45" /><circle cx="31" cy="30.500" r="11.500" fill="#0c0e14" /></svg>
+          <div><span style={{ fontWeight: 800 }}>perth</span><span style={{ fontWeight: 200, marginLeft: 22 }}>wa</span></div>
+        </div>
+      ))}
+      {piece(31.0, 99, <Img src={sf("brand/mm_white.svg")} style={{ width: 660 }} />)}
     </>
   );
 };
@@ -457,8 +471,8 @@ export const Film: React.FC<{ sound?: boolean }> = ({ sound = true }) => (
     <Shot a={4.3} b={5.5}><DashFlash /></Shot>
     <Shot a={5.5} b={8.0}><GalleryFind /></Shot>
     <Shot a={8.0} b={9.5}><Canvas /></Shot>
-    <Shot a={9.5} b={11.5}><LongPage /></Shot>
-    <Shot a={11.5} b={12.4} bg="#111111"><Menu /></Shot>
+    <Shot a={9.5} b={11.0}><LongPage /></Shot>
+    <Shot a={11.0} b={12.4} bg="#111111"><Menu /></Shot>
     <Shot a={12.4} b={M.dip2}><SiteSwing /></Shot>
     <Shot a={M.dip2} b={16.5}><DashBuild /></Shot>
     <Shot a={16.5} b={17.0}><CmsMacro /></Shot>
@@ -475,6 +489,6 @@ export const Film: React.FC<{ sound?: boolean }> = ({ sound = true }) => (
     <Shot a={25.0} b={25.8} bg={SITE_BG}><StripMacro /></Shot>
     <Shot a={25.8} b={29.0}><Finale /></Shot>
     <Shot a={29.0} b={99}><Logos /></Shot>
-    {sound && <Audio src={staticFile("audio/mix.wav")} />}
+    {sound && <Audio src={staticFile("audio/mix_sfx.wav")} />}
   </AbsoluteFill>
 );
