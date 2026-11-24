@@ -36,7 +36,7 @@ const DashWindow: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <BrowserWindow w={DW} h={DH} url="manage.wix.com" dark>{children}</BrowserWindow>
   </div>
 );
-const DarkRoom: React.FC<{ glow?: number }> = ({ glow = 1 }) => (
+export const DarkRoom: React.FC<{ glow?: number }> = ({ glow = 1 }) => (
   <div style={{ position: "absolute", inset: 0, background: "#08090c" }}>
     <div style={{ position: "absolute", inset: 0, opacity: glow, background: "radial-gradient(120% 90% at 50% 40%, #1b2030 0%, #0c0e14 55%, #07080b 100%)" }} />
   </div>
