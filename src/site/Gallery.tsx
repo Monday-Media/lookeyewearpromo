@@ -23,9 +23,19 @@ export const SiteHeader: React.FC = () => (
   </div>
 );
 
-export const Gallery: React.FC<{ time: number; hover?: { col: number; row: number; amt: number }; scroll?: number }> = ({ time, hover, scroll = 0 }) => {
-  const colW = (SITE_W - GAP * 3) / 4;
-  const tileH = (colW * 16) / 9;
+const COL_W = (SITE_W - GAP * 3) / 4;
+const TILE_H = (COL_W * 16) / 9;
+const colItems = (ci: number) => (items as any[]).filter((i) => i.c === ci + 1);
+const colY = (time: number, ci: number) => (time * SPEEDS[ci] + ci * 137) % (colItems(ci).length * (TILE_H + GAP));
+/** Centre of a tile in site pixels at a given time. Rows count down the doubled column. */
+export const tilePos = (time: number, ci: number, ri: number, scroll = 0) => ({ x: ci * (COL_W + GAP) + COL_W / 2, y: 56 + GAP - scroll - colY(time, ci) + ri * (TILE_H + GAP) + TILE_H / 2, w: COL_W, h: TILE_H, n: colItems(ci).length });
+export const tileRow = (ci: number, title: string) => colItems(ci).findIndex((i) => i.t === title);
+type Hover = { col: number; row: number; amt: number };
+
+export const Gallery: React.FC<{ time: number; hover?: Hover | Hover[]; scroll?: number }> = ({ time, hover, scroll = 0 }) => {
+  const colW = COL_W;
+  const tileH = TILE_H;
+  const hovers = hover ? (Array.isArray(hover) ? hover : [hover]) : [];
   return (
     <div style={{ position: "absolute", inset: 0, background: BG, fontFamily: FONT, overflow: "hidden" }}>
       <div style={{ position: "absolute", top: 56 + GAP - scroll, left: 0, right: 0, display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: GAP }}>
@@ -35,8 +45,8 @@ export const Gallery: React.FC<{ time: number; hover?: { col: number; row: numbe
           const y = (time * SPEEDS[ci] + ci * 137) % setH;
           return (
             <div key={c} style={{ display: "flex", flexDirection: "column", gap: GAP, transform: `translateY(${-y}px)` }}>
-              {[...col, ...col].map((it, ri) => {
-                const h = hover && hover.col === ci && hover.row === ri ? hover.amt : 0;
+              {[...col, ...col, ...col].map((it, ri) => {
+                const h = hovers.filter((x) => x.col === ci && x.row === ri).reduce((m, x) => Math.max(m, x.amt), 0);
                 return (
                   <div key={ri} style={{ position: "relative", width: "100%", height: tileH, overflow: "hidden", background: BG, flexShrink: 0 }}>
                     <Img src={staticFile(`img/${it.id}.jpg`)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: `blur(${4 * (1 - h)}px)`, transform: `scale(${1 + 0.02 * h})` }} />

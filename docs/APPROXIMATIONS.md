@@ -1,4 +1,4 @@
-# What is stood in (look test v2)
+# What is stood in (full draft v3)
 
 - Wix dashboard: rebuilt from Paul's nine screenshots, not from Wix's code. Colours are sampled from the screenshots. Sizes and spacing are measured by eye.
 - Dashboard typeface: Wix Madefor Text. This looks right against the screenshots but has not been confirmed as the font Wix serves in the dashboard.
@@ -10,6 +10,13 @@
 - Browser windows and the pointer are drawn in code.
 - Builds: elements arrive as a plain wireframe of themselves and resolve into the real UI. No colour is added (Paul, 24 Nov).
 - CMS item page: rebuilt from screenshots 6 and 7 with the real VAANYARD field values.
-- Product page: ported from ProductHero.jsx. Only the hero is built so far.
+- Product page: ported from ProductHero, ProductDescription, DragGallery, ClosingImage and FeatureGrid, with the real VAANYARD wording and pictures read from the CMS (read only). It is laid out as one long sheet for the fly-down shot. Section heights are worked out by hand, not measured from the live page. The enquiry modal is not built.
 - Padlock: drawn in code as part of the browser window. The closing animation is invented.
 - Analytics figures and their sparklines are invented.
+- Home hero: ported from HomeHero.jsx. The intro plays a quarter faster than on the site. The film grain and the slow 22 second picture drift are left out. The header's fade-in timing is a guess.
+- The hero picture is the site's own file, which is 1024 by 576, so it is soft when it fills the frame.
+- Menu: ported from MegaMenu.jsx. The items come in faster than on the site. No pointer is drawn.
+- The site's pill cursor is not drawn anywhere in the film.
+- "Drawn from a blank canvas": the wireframe is a plain outline of the real product hero (header, picture, label, title).
+- Closing stack (26.9 to 29.0): the site window with the dashboard home, the CMS table and the contacts beneath it. The arrangement is invented for the line "with nothing missing underneath".
+- Wix Studio logo at 29.0 to 31.0: placed there by Claude, not confirmed with Paul. Monday Media logo at 31.0.

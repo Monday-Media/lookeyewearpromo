@@ -29,6 +29,16 @@ export const easeOut = (u: number) => 1 - Math.pow(1 - clamp01(u), 4);
 export const easeIn = (u: number) => Math.pow(clamp01(u), 3);
 export const easeInOut = (u: number) => { const x = clamp01(u); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
 
+/** Speed ramp: almost still, then very fast through the middle, then almost still again. */
+export const sr = (u: number) => { const x = clamp01(u); return x < 0.5 ? 16 * Math.pow(x, 5) : 1 - Math.pow(-2 * x + 2, 5) / 2; };
+/**
+ * How far a speed-ramped move has got (0 to 1). The move peaks at `at` (put that on a beat) and takes `d` seconds.
+ * A tenth of the travel is spread as a slow creep from `from`, so the shot is never quite still before the ramp.
+ */
+export const rampW = (t: number, at: number, d = 0.44, from = at - 1) => 0.9 * sr(seg(t, at - d / 2, at + d / 2)) + 0.1 * seg(t, from, at + d / 2);
+/** Scale factor for a shot's fast way in and fast way out, so the hard cuts land at speed. */
+export const io = (t: number, a: number, b: number, inS = 1.45, outS = 1.45, inDur = 0.32, outDur = 0.24) => lerp(inS, 1, easeOut(seg(t, a, a + inDur))) * lerp(1, outS, easeIn(seg(t, b - outDur, b)));
+
 export type Cam = { s?: number; x?: number; y?: number; r?: number };
 /**
  * The camera for one shot. A shot decelerates in from `from`, sits on `hold` with a slow drift, then accelerates out
