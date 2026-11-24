@@ -1,4 +1,4 @@
-# What is stood in (draft v5)
+# What is stood in (draft v6)
 
 - Wix dashboard: rebuilt from Paul's nine screenshots, not from Wix's code. Colours are sampled from the screenshots. Sizes and spacing are measured by eye.
 - Dashboard typeface: Wix Madefor Text. This looks right against the screenshots but has not been confirmed as the font Wix serves in the dashboard.
@@ -23,3 +23,5 @@
 - 12.4 to 15.06 now shows the Profile page (top of the page only, ported from ProfileHeader and BrandStorySection) so the gallery is not repeated (Paul, 24 Nov).
 - End card: white pin and "Perth. WA" in Outfit bold (Paul, 24 Nov). This replaces the lowercase two-weight version.
 - Sound v5: all levels down 10 to 14 LU, first hover sound and the 13.5 whoosh removed, the stack lift is a soft tone not a swell, single haptic on the logo.
+- Profile page (12.4 to 15.06) now includes the sliding picture strip (the ten real ProfileGallery pictures) and the founders' section, and scrolls down through them. The strip's speed (46 px a second) and its left-to-right direction are set by eye and from Paul's description; the site's own figures have not been read.
+- End card is "Perth WA" with equal gaps between pin, Perth and WA. Sounds between 16 and 19 seconds are a further 6 dB down.

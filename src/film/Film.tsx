@@ -59,7 +59,7 @@ const SiteSwing: React.FC = () => {
           <div style={{ position: "absolute", left: (W - ww) / 2, top: (H - wh) / 2, width: ww, height: wh, transformOrigin: "100% 50%", transform: `translateX(${-420 * sw}px) translateZ(${-500 * sw}px) rotateY(${-84 * sw}deg) rotateZ(${-3 * sw}deg)`, filter: `brightness(${1 - 0.45 * sw})` }}>
             <div style={{ transformOrigin: "0 0", transform: `scale(${k})` }}>
               <BrowserWindow w={SITE_W} h={SITE_H} url="lookeyewear.com.au">
-                <Profile scroll={lerp(0, 150, easeInOut(seg(t, 12.6, 14.2)))} />
+                <Profile time={t} scroll={lerp(380, 980, seg(t, 12.4, 14.3))} />
               </BrowserWindow>
             </div>
           </div>
@@ -454,7 +454,7 @@ const Logos: React.FC = () => {
       {piece(29.0, 31.0, (
         <div style={{ display: "flex", alignItems: "center", gap: 24, color: "#fff", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 84, letterSpacing: "-0.01em", lineHeight: 1 }}>
           <svg width="52" height="70" viewBox="0 0 62 84" style={{ transform: `translateY(${-46 * (1 - drop)}px)` }}><path d="M31 0C13.900 0 0 13.700 0 30.600 0 53.200 31 84 31 84s31-30.800 31-53.400C62 13.700 48.100 0 31 0z" fill="#fff" /><circle cx="31" cy="30.500" r="11.500" fill="#0c0e14" /></svg>
-          <div>Perth. WA</div>
+          <div>Perth</div><div>WA</div>
         </div>
       ))}
       {piece(31.0, 99, <Img src={sf("brand/mm_white.svg")} style={{ width: 660 }} />)}

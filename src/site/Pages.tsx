@@ -214,28 +214,53 @@ export const ProductLong: React.FC<{ t: number; plan?: LongPlan; stripX?: number
   );
 };
 
-/** The Profile page at its top, ported from ProfileHeader.jsx and BrandStorySection.jsx with the site's own wording. */
-export const Profile: React.FC<{ scroll?: number }> = ({ scroll = 0 }) => (
-  <div style={{ position: "absolute", inset: 0, background: BG, color: INK, fontFamily: FONT, overflow: "hidden" }}>
-    <div style={{ position: "absolute", left: 0, right: 0, top: -scroll }}>
-      <div style={{ height: 56 }} />
-      <div style={{ padding: "48px 48px 64px", maxWidth: "85%" }}>
-        <div style={{ ...label, marginBottom: 16 }}>Design Philosophy</div>
-        <div style={{ fontWeight: 600, fontSize: 88, lineHeight: 0.95, marginBottom: 24, textTransform: "uppercase" }}>Profile</div>
-        <div style={{ fontSize: 13, lineHeight: 1.7, maxWidth: 800 }}>Every frame in this room was chosen deliberately. LOOK Eyewear &amp; Optometry exists at the intersection of clinical excellence and design, Bunbury's destination for those who understand that what sits on their face is as considered a decision as anything else they wear.</div>
-      </div>
-      <div style={{ borderTop: RULE, padding: "64px 48px", display: "grid", gridTemplateColumns: "20% 1fr 1fr", gap: 48, alignItems: "start" }}>
-        <div style={{ fontWeight: 600, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>The Home of Unique Eyewear.</div>
-        <div style={{ gridColumn: "2 / 4" }}>
-          <div style={{ fontWeight: 600, fontSize: 35, lineHeight: 1.15, marginBottom: 24 }}>40 Years. 4 Australian Optical Laboratories. 1 Passion.</div>
-          <div style={{ fontSize: 13, lineHeight: 1.7, maxWidth: 800 }}>
-            LOOK Eyewear &amp; Optometry was founded on a simple belief: eyewear should be more than functional. Located in the heart of Bunbury CBD, LOOK is a boutique eyewear destination unlike anything else in the South West. Warm, independent, and uncompromisingly curated.<br /><br />
-            Bhargav Davé brings over 40 years of optical experience and direct relationships with four independent Australian laboratories. He meets designers face-to-face, selecting every frame by design integrity, material quality and craftsmanship. Not volume. Not margin.<br /><br />
-            LOOK also offers clinical excellence. Comprehensive eye examinations including Children's, Binocular, and Diabetic, backed by advanced diagnostic capability. Bhargav is one of only two optometrists in the South West offering advanced contact lens fitting for Keratoconus.
+/**
+ * The Profile page, ported from ProfileHeader, BrandStorySection, InfiniteImageStrip and FounderSection with the site's
+ * own wording, the ten ProfileGallery pictures from the CMS and the founders' photo. The strip drifts sideways at a
+ * steady pace; its speed and direction here are set by eye (InfiniteDragStrip's own figures have not been read).
+ */
+const P13: React.CSSProperties = { fontSize: 13, lineHeight: 1.7 };
+export const Profile: React.FC<{ scroll?: number; time?: number }> = ({ scroll = 0, time = 0 }) => {
+  const span = 10 * (386 + 48);
+  const off = ((time * 46) % span + span) % span;
+  return (
+    <div style={{ position: "absolute", inset: 0, background: BG, color: INK, fontFamily: FONT, overflow: "hidden" }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: -scroll }}>
+        <div style={{ height: 56 }} />
+        <div style={{ padding: "48px 48px 64px", maxWidth: "85%" }}>
+          <div style={{ ...label, marginBottom: 16 }}>Design Philosophy</div>
+          <div style={{ fontWeight: 600, fontSize: 88, lineHeight: 0.95, marginBottom: 24, textTransform: "uppercase" }}>Profile</div>
+          <div style={{ ...P13, maxWidth: 800 }}>Every frame in this room was chosen deliberately. LOOK Eyewear &amp; Optometry exists at the intersection of clinical excellence and design, Bunbury's destination for those who understand that what sits on their face is as considered a decision as anything else they wear.</div>
+        </div>
+        <div style={{ borderTop: RULE, padding: "64px 48px", display: "grid", gridTemplateColumns: "20% 1fr 1fr", gap: 48, alignItems: "start" }}>
+          <div style={{ fontWeight: 600, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>The Home of Unique Eyewear.</div>
+          <div style={{ gridColumn: "2 / 4" }}>
+            <div style={{ fontWeight: 600, fontSize: 35, lineHeight: 1.15, marginBottom: 24 }}>40 Years. 4 Australian Optical Laboratories. 1 Passion.</div>
+            <div style={{ ...P13, maxWidth: 800 }}>
+              LOOK Eyewear &amp; Optometry was founded on a simple belief: eyewear should be more than functional. Located in the heart of Bunbury CBD, LOOK is a boutique eyewear destination unlike anything else in the South West. Warm, independent, and uncompromisingly curated.<br /><br />
+              Bhargav Davé brings over 40 years of optical experience and direct relationships with four independent Australian laboratories. He meets designers face-to-face, selecting every frame by design integrity, material quality and craftsmanship. Not volume. Not margin.<br /><br />
+              LOOK also offers clinical excellence. Comprehensive eye examinations including Children's, Binocular, and Diabetic, backed by advanced diagnostic capability. Bhargav is one of only two optometrists in the South West offering advanced contact lens fitting for Keratoconus.
+            </div>
+          </div>
+        </div>
+        <div style={{ height: 386, position: "relative", overflow: "hidden" }}>
+          {Array.from({ length: 30 }, (_, i) => <Img key={i} src={staticFile(`img/pg${i % 10}.jpg`)} style={{ position: "absolute", top: 0, left: (i - 10) * 434 + off, width: 386, height: 386, objectFit: "cover" }} />)}
+        </div>
+        <div style={{ marginTop: 64, borderTop: RULE, padding: "64px 48px", display: "grid", gridTemplateColumns: "20% 1fr 1fr", gap: 48, alignItems: "start" }}>
+          <div style={{ fontWeight: 600, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>An Eye for the Extraordinary.</div>
+          <div style={{ aspectRatio: "1 / 1", overflow: "hidden", background: "rgba(17,17,17,0.06)" }}><Img src={staticFile("img/founder.jpg")} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></div>
+          <div>
+            <div style={{ fontWeight: 600, fontSize: 35, lineHeight: 1.15, marginBottom: 20 }}>The Curator Behind the Collection.</div>
+            <div style={{ ...P13, display: "flex", flexDirection: "column", gap: 16 }}>
+              <div>Bhargav Davé founded LOOK Eyewear with a single conviction: the right frame is never an accident. With 40 years of experience and direct relationships with independent designers around the world, he has built Western Australia's most distinctive collection of boutique and designer frames, chosen because they reflect the same sensibility he brings to every eye examination.</div>
+              <div>His approach draws from a world well beyond optometry, from Japanese design philosophy, fine art, architecture, and the quiet discipline of makers who treat their craft as a practice, not a product. Every brand at LOOK was chosen because it has something to say. Nothing here exists to fill a shelf.</div>
+              <div>LOOK is not a franchise. There is no head office, no shareholders, no 2-for-1 deals. Just a 100% locally owned West Australian business, obsessed with doing this properly. We don't rush. We listen. We guide you to your ideal optical solution.</div>
+              <div>We are <span style={{ textDecoration: "underline", textDecorationThickness: 1, textUnderlineOffset: 4 }}>unashamedly independent</span>. Are you?</div>
+            </div>
           </div>
         </div>
       </div>
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 56, background: BG, borderBottom: "1px solid rgba(188,190,192,0.55)", display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", padding: "0 48px", ...nav }}><div>Contact</div><div>Look Eyewear &amp; Optometry</div><div style={{ justifySelf: "end" }}>Menu</div></div>
     </div>
-    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 56, background: BG, borderBottom: "1px solid rgba(188,190,192,0.55)", display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", padding: "0 48px", ...nav }}><div>Contact</div><div>Look Eyewear &amp; Optometry</div><div style={{ justifySelf: "end" }}>Menu</div></div>
-  </div>
-);
+  );
+};

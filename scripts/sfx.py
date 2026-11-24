@@ -105,7 +105,7 @@ layer = np.zeros_like(mix)
 rows = []
 for t, name, role, trim in E:
     x = S[name]; i = int(t * SR)
-    target = REF - BELOW[role] + trim + TRIM
+    target = REF - BELOW[role] + trim + TRIM + (-6.0 if 15.9 <= t < 19.3 else 0.0)  # v6: 16 to 19 s still too loud (Paul)
     g = 10 ** ((target - loud(x, 0.1)) / 20)
     n = min(len(x), len(layer) - i)
     if n > 0: layer[i:i + n] += x[:n] * g
