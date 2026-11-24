@@ -58,20 +58,19 @@ export const Shot: React.FC<{ a: number; b: number; children: React.ReactNode; b
 };
 
 /**
- * An element that builds: it arrives at `at` blurred, tinted and slightly large, then sharpens and settles.
- * `hold` keeps it as a blurred tinted block until that time (the stutter build), then it resolves.
+ * An element that builds. It arrives at `at` as a simplified wireframe of itself (`skeleton`), popping in slightly
+ * large and soft, and holds like that until `hold`, when the wireframe gives way to the real thing as it sharpens.
+ * No colour is added: the wireframe is drawn in the element's own colours (Paul, 24 Nov: no coloured boxes).
  */
-export const Build: React.FC<{ at: number; hold?: number; dur?: number; tint?: string; blur?: number; style?: React.CSSProperties; children: React.ReactNode; radius?: number }> = ({ at, hold, dur = 0.34, tint = MM_BLUE, blur = 22, style, children, radius = 0 }) => {
+export const Build: React.FC<{ at: number; hold?: number; dur?: number; skeleton?: React.ReactNode; style?: React.CSSProperties; children: React.ReactNode }> = ({ at, hold, dur = 0.3, skeleton, style, children }) => {
   const t = useT();
   if (t < at) return <div style={{ ...style, visibility: "hidden" }}>{children}</div>;
-  const pop = easeOut(seg(t, at, at + 0.18));
+  const pop = easeOut(seg(t, at, at + 0.2));
   const res = easeOut(seg(t, hold ?? at, (hold ?? at) + dur));
-  const b = blur * (1 - res);
-  const other = tint === MM_RED ? "#ff8a5c" : "#7b8cff";
   return (
-    <div style={{ ...style, position: style?.position || "relative", transform: `${style?.transform || ""} scale(${lerp(1.06, 1, pop)})`, opacity: lerp(0, 1, seg(t, at, at + 0.05)) }}>
-      <div style={{ filter: b > 0.2 ? `blur(${b}px) saturate(${1 + 0.8 * (1 - res)})` : undefined, height: "100%" }}>{children}</div>
-      {res < 1 && <div style={{ position: "absolute", inset: 0, borderRadius: radius, background: `linear-gradient(125deg, ${tint} 0%, ${other} 55%, ${tint === MM_RED ? MM_BLUE : MM_RED} 130%)`, opacity: 0.62 * (1 - res), filter: `blur(${10 * (1 - res)}px)`, pointerEvents: "none" }} />}
+    <div style={{ ...style, position: style?.position || "relative", transform: `${style?.transform || ""} scale(${lerp(1.05, 1, pop)})`, opacity: seg(t, at, at + 0.05), filter: pop < 1 ? `blur(${7 * (1 - pop)}px)` : undefined }}>
+      <div style={{ height: "100%", opacity: skeleton ? res : 1, filter: res < 1 ? `blur(${9 * (1 - res)}px)` : undefined }}>{children}</div>
+      {skeleton && res < 1 && <div style={{ position: "absolute", inset: 0, opacity: 1 - res, overflow: "hidden", pointerEvents: "none" }}>{skeleton}</div>}
     </div>
   );
 };

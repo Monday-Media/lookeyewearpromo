@@ -3,13 +3,14 @@ import { AbsoluteFill, Audio, staticFile } from "remotion";
 import { useT, Shot, shotCam, seg, easeOut, easeIn, easeInOut, lerp, W, H } from "../kit/kit";
 import { Backdrop, BrowserWindow } from "../kit/Window";
 import { Gallery, SITE_W, SITE_H } from "../site/Gallery";
-import { Dash, CmsTable, Contacts, HomePage, Flyout, Arrow, DW, DH, navY, CMS_ROW_H, CONTACT_ROW_H } from "../dash/Dash";
+import { Dash, CmsTable, CmsItem, ITEM_IMAGE, Contacts, HomePage, Flyout, Arrow, DW, DH, navY, CMS_ROW_H, CONTACT_ROW_H } from "../dash/Dash";
+import { ProductPage } from "../site/Product";
 
 /** Pointer travel between two points on a soft arc. */
 const travel = (t: number, a: number, b: number, p0: [number, number], p1: [number, number]) => { const u = easeInOut(seg(t, a, b)); return { x: lerp(p0[0], p1[0], u), y: lerp(p0[1], p1[1], u) - 26 * Math.sin(Math.PI * u) }; };
 
 /** Markers and voice times on the film clock (seconds), measured from Paul's mix and his marker list. */
-export const M = { dip2: 15.06, hit1: 15.24, hit2: 15.6, drop: 16.0, content: 16.12, customers: 17.08, marketing: 17.92, m6: 19.0 };
+export const M = { dip2: 15.06, hit1: 15.24, hit2: 15.6, drop: 16.0, content: 16.12, customers: 17.08, marketing: 17.92, m6: 19.0, powered: 19.4, m7: 21.0, dip3: 23.0, back3: 24.0 };
 
 /** Camera on a stage: scale about a focus point and bring that point to the middle of the frame. */
 const Stage: React.FC<{ s: number; fx?: number; fy?: number; x?: number; y?: number; r?: number; children: React.ReactNode }> = ({ s, fx = W / 2, fy = H / 2, x = 0, y = 0, r = 0, children }) => (
@@ -144,6 +145,97 @@ const Marketing: React.FC = () => {
   );
 };
 
+const SITE_L = (W - SITE_W) / 2;
+const SITE_T = (H - (SITE_H + 44)) / 2;
+const SiteWindow: React.FC<{ children: React.ReactNode; lockOpen?: number }> = ({ children, lockOpen }) => (
+  <div style={{ position: "absolute", left: SITE_L, top: SITE_T }}><BrowserWindow w={SITE_W} h={SITE_H} url="lookeyewear.com.au" lockOpen={lockOpen}>{children}</BrowserWindow></div>
+);
+
+/** 19.0 to 19.5: the VAANYARD item open in the CMS; the camera drives into its image. */
+const ItemMacro: React.FC = () => {
+  const t = useT();
+  const a = M.m6, b = 19.5;
+  const ui = easeOut(seg(t, a, a + 0.3));
+  const uo = easeIn(seg(t, b - 0.26, b));
+  const f0 = dp(238 + 332 + 300, 45 + 112 + 58 + 120), f1 = dp(ITEM_IMAGE.x, ITEM_IMAGE.y);
+  const s = lerp(lerp(3.0, 2.05, ui), 6.2, uo);
+  return (
+    <>
+      <DarkRoom />
+      <Stage s={s} fx={lerp(f0.fx, f1.fx, easeInOut(seg(t, a + 0.1, b)))} fy={lerp(f0.fy - 160 * (1 - ui), f1.fy, easeInOut(seg(t, a + 0.1, b)))}>
+        <DashWindow><Dash active="CMS" page={<CmsItem fieldsAt={a - 0.06} />} /></DashWindow>
+      </Stage>
+    </>
+  );
+};
+
+/** 19.5 to 20.5: match cut. The same image is the product page's hero on the live site. */
+const ProductWide: React.FC = () => {
+  const t = useT();
+  const a = 19.5, b = 20.5;
+  const c = shotCam(t, a, b, { from: { s: 1.75 }, hold: { s: 1 }, to: { s: 1.5, x: -520, y: 40 }, inDur: 0.42, outDur: 0.24, drift: { s: 0.012 } });
+  return (
+    <>
+      <Backdrop src="img/hero.jpg" scale={1.14 + 0.02 * (t - a)} dim={0.3} />
+      <Stage s={c.s} x={c.x} y={c.y} fx={W / 2} fy={SITE_T + 44 + SITE_H * 0.42}>
+        <SiteWindow><ProductPage t={t} titleAt={a + 0.16} zoom={1.06 - 0.02 * (t - a)} /></SiteWindow>
+      </Stage>
+    </>
+  );
+};
+
+/** 20.5 to 21.0: the analytics on the dashboard home, counting up. */
+const AnalyticsMacro: React.FC = () => {
+  const t = useT();
+  const a = 20.5, b = M.m7;
+  const c = shotCam(t, a, b, { from: { s: 3.1, x: 420 }, hold: { s: 2.25 }, to: { s: 3.0, x: -560 }, inDur: 0.3, outDur: 0.2, drift: { x: -60 } });
+  const f = dp(238 + 222 + 330, 45 + 191 + 38);
+  return (
+    <>
+      <DarkRoom />
+      <Stage s={c.s} fx={f.fx} fy={f.fy} x={c.x} y={c.y}>
+        <DashWindow><Dash active="Home" page={<HomePage count={easeOut(seg(t, a - 0.05, b + 0.3))} />} /></DashWindow>
+      </Stage>
+    </>
+  );
+};
+
+/** 21.0 to 22.0: crash zoom into the padlock on the live site's address bar; the lock closes. */
+const Padlock: React.FC = () => {
+  const t = useT();
+  const a = M.m7, b = 22.0;
+  const ui = easeOut(seg(t, a, a + 0.34));
+  const uo = easeIn(seg(t, b - 0.22, b));
+  const fx = lerp(W / 2, W / 2 - 14, ui), fy = lerp(H / 2, SITE_T + 22, ui);
+  const lock = 1 - easeOut(seg(t, a + 0.42, a + 0.56));
+  return (
+    <>
+      <Backdrop src="img/hero.jpg" scale={1.16} dim={0.3} />
+      <Stage s={lerp(lerp(1.05, 8.2, ui), 12.5, uo) * (1 + 0.012 * (t - a))} fx={fx} fy={fy} x={-40 * (t - a)}>
+        <SiteWindow lockOpen={lock}><ProductPage t={t} /></SiteWindow>
+      </Stage>
+    </>
+  );
+};
+
+/** 22.0 to 24.0: site and dashboard come together side by side, then the move ramps down to a crawl for the dip. */
+const SideBySide: React.FC = () => {
+  const t = useT();
+  const a = 22.0;
+  const p = easeOut(seg(t, a, a + 0.9));
+  const creep = t - a;
+  const win = (cx: number, k: number, ry: number, w: number, h: number, node: React.ReactNode) => (
+    <div style={{ position: "absolute", left: cx - w / 2, top: H / 2 - h / 2, width: w, height: h, transform: `perspective(2200px) rotateY(${ry}deg) scale(${k})` }}>{node}</div>
+  );
+  return (
+    <>
+      <Backdrop src="img/hero.jpg" scale={1.2 - 0.03 * p} dim={0.3 + 0.3 * p} blur={3 + 5 * p} />
+      {win(lerp(W / 2, 505, p) - 7 * creep, lerp(1.0, 0.585, p), lerp(0, 13, p), SITE_W, SITE_H + 44, <BrowserWindow w={SITE_W} h={SITE_H} url="lookeyewear.com.au"><ProductPage t={t} zoom={1.03} /></BrowserWindow>)}
+      {win(lerp(W + 900, 1425, p) + 7 * creep, 0.5, lerp(-34, -13, p), DW, DH + 44, <BrowserWindow w={DW} h={DH} url="manage.wix.com" dark><Dash active="Home" page={<HomePage count={easeOut(seg(t, 20.45, 21.3))} />} /></BrowserWindow>)}
+    </>
+  );
+};
+
 export const Film: React.FC<{ sound?: boolean }> = ({ sound = true }) => (
   <AbsoluteFill style={{ background: "#000" }}>
     <Shot a={12.4} b={M.dip2}><SiteSwing /></Shot>
@@ -152,6 +244,11 @@ export const Film: React.FC<{ sound?: boolean }> = ({ sound = true }) => (
     <Shot a={17.0} b={17.5}><ContactsWide /></Shot>
     <Shot a={17.5} b={18.0}><ContactsMacro /></Shot>
     <Shot a={18.0} b={M.m6}><Marketing /></Shot>
+    <Shot a={M.m6} b={19.5}><ItemMacro /></Shot>
+    <Shot a={19.5} b={20.5}><ProductWide /></Shot>
+    <Shot a={20.5} b={M.m7}><AnalyticsMacro /></Shot>
+    <Shot a={M.m7} b={22.0}><Padlock /></Shot>
+    <Shot a={22.0} b={M.back3}><SideBySide /></Shot>
     {sound && <Audio src={staticFile("audio/mix.wav")} />}
   </AbsoluteFill>
 );
