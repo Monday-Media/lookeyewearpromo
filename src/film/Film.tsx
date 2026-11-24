@@ -3,9 +3,8 @@ import { AbsoluteFill, Audio, staticFile } from "remotion";
 import { useT, Shot, shotCam, seg, easeOut, easeIn, easeInOut, lerp, rampW, io, W, H } from "../kit/kit";
 import { Backdrop, BrowserWindow } from "../kit/Window";
 import { Gallery, SITE_W, SITE_H, tilePos, tileRow } from "../site/Gallery";
-import { Hero, MegaMenu, MENU_X, MENU_Y, ProductLong, Journal, LONG } from "../site/Pages";
-import "@fontsource/outfit/200.css";
-import "@fontsource/outfit/800.css";
+import { Hero, MegaMenu, MENU_X, MENU_Y, ProductLong, Journal, Profile, LONG } from "../site/Pages";
+import "@fontsource/outfit/700.css";
 import { Img, staticFile as sf } from "remotion";
 import { Dash, CmsTable, CmsItem, ITEM_IMAGE, Contacts, HomePage, Flyout, Arrow, DW, DH, navY, CMS_ROW_H, CONTACT_ROW_H } from "../dash/Dash";
 import { ProductPage } from "../site/Product";
@@ -60,7 +59,7 @@ const SiteSwing: React.FC = () => {
           <div style={{ position: "absolute", left: (W - ww) / 2, top: (H - wh) / 2, width: ww, height: wh, transformOrigin: "100% 50%", transform: `translateX(${-420 * sw}px) translateZ(${-500 * sw}px) rotateY(${-84 * sw}deg) rotateZ(${-3 * sw}deg)`, filter: `brightness(${1 - 0.45 * sw})` }}>
             <div style={{ transformOrigin: "0 0", transform: `scale(${k})` }}>
               <BrowserWindow w={SITE_W} h={SITE_H} url="lookeyewear.com.au">
-                <Gallery time={t} hover={{ col: 1, row: 0, amt: hov }} />
+                <Profile scroll={lerp(0, 150, easeInOut(seg(t, 12.6, 14.2)))} />
               </BrowserWindow>
             </div>
           </div>
@@ -453,9 +452,9 @@ const Logos: React.FC = () => {
     <>
       <DarkRoom glow={0.8} />
       {piece(29.0, 31.0, (
-        <div style={{ display: "flex", alignItems: "center", gap: 26, color: "#fff", fontFamily: "'Outfit', sans-serif", fontSize: 96, letterSpacing: "-0.045em", lineHeight: 1 }}>
-          <svg width="62" height="84" viewBox="0 0 62 84" style={{ transform: `translateY(${-46 * (1 - drop)}px)`, marginTop: 6 }}><path d="M31 0C13.900 0 0 13.700 0 30.600 0 53.200 31 84 31 84s31-30.800 31-53.400C62 13.700 48.100 0 31 0z" fill="#ee1d45" /><circle cx="31" cy="30.500" r="11.500" fill="#0c0e14" /></svg>
-          <div><span style={{ fontWeight: 800 }}>perth</span><span style={{ fontWeight: 200, marginLeft: 22 }}>wa</span></div>
+        <div style={{ display: "flex", alignItems: "center", gap: 24, color: "#fff", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 84, letterSpacing: "-0.01em", lineHeight: 1 }}>
+          <svg width="52" height="70" viewBox="0 0 62 84" style={{ transform: `translateY(${-46 * (1 - drop)}px)` }}><path d="M31 0C13.900 0 0 13.700 0 30.600 0 53.200 31 84 31 84s31-30.800 31-53.400C62 13.700 48.100 0 31 0z" fill="#fff" /><circle cx="31" cy="30.500" r="11.500" fill="#0c0e14" /></svg>
+          <div>Perth. WA</div>
         </div>
       ))}
       {piece(31.0, 99, <Img src={sf("brand/mm_white.svg")} style={{ width: 660 }} />)}

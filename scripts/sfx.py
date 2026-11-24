@@ -66,10 +66,15 @@ def swell(dur=0.95):
     return st(env * (out * 0.8 + body))
 
 S = {k.split("C2_")[1][:-4]: load(k) for k in glob.glob(f"{ROOT}/audio/sfx/C2_*.wav")}
-S.update(lock=lock(), count=count_tick(), draw=draw_tick(), draw2=draw_tick(640), swell=swell())
+def lift(dur=0.42):
+    """A soft rounded rise for a slow lift: a low tone gliding up with a quiet overtone, no noise, no hard edge."""
+    n = t_(dur); u = n / dur; env = np.sin(np.pi * u) ** 1.3
+    return st(env * (np.sin(2 * np.pi * (190 * n + 110 * n * n)) * 0.7 + np.sin(2 * np.pi * (570 * n + 330 * n * n)) * 0.3))
+S.update(lock=lock(), count=count_tick(), draw=draw_tick(), draw2=draw_tick(640), lift=lift())
 
 # LU under the mix for each role (smaller = louder). This film leads with sound, so these sit closer than on Flare.
-BELOW = dict(haptic=4, haptic_light=7, haptic_double=3.5, pick=9, draw=7, count=14, lock=4, swell=11, whoosh=10)
+# v5 (Paul, 24 Nov): everything was far too loud, the single haptics most of all. All down 10 to 14 LU.
+BELOW = dict(haptic=18, haptic_light=20, haptic_double=15, pick=20, draw=18, count=24, lock=14, lift=20, whoosh=20)
 REF = -21.0
 
 E = []
@@ -78,14 +83,12 @@ def run(t0, n, step, names, role, trim=0.0):
     for i in range(n): ev(t0 + i * step, names[i % len(names)], role, trim - 0.25 * i)
 PICKS = ["pick_1", "pick_2", "pick_3", "pick_4"]
 
-ev(3.12, "haptic_light")                                   # first gallery tile answers the pointer
 ev(5.12, "haptic")                                         # pointer lands on CMS in the side menu
 ev(6.6, "haptic_light")                                    # VAANYARD tile sharpens
 for i, t in enumerate([8.0, 8.125, 8.25, 8.375, 8.5, 8.625, 8.75, 8.875]): ev(t, "draw" if i % 2 == 0 else "draw2", "draw")  # journal drawn in
 ev(9.0, "haptic_double")                                   # journal resolves
 ev(9.5, "draw", "draw"); run(9.92, 5, 0.045, PICKS, "pick"); ev(10.42, "draw2", "draw")  # product page sections build
 for t in (11.3, 11.68, 12.04): ev(t, "haptic_light")       # menu hovers
-ev(13.55, "whoosh_3", "whoosh")                            # window swings round
 ev(15.24, "haptic"); ev(15.6, "haptic"); ev(15.94, "draw2", "draw"); ev(16.0, "haptic_double")  # dashboard build and drop
 run(16.04, 9, 0.04, PICKS, "pick")                         # rows cascade
 ev(16.68, "haptic_light"); run(17.03, 6, 0.045, PICKS, "pick"); ev(17.7, "haptic_light")
@@ -93,9 +96,9 @@ ev(18.1, "haptic"); run(18.16, 5, 0.03, PICKS, "pick", -2); ev(18.52, "haptic_li
 run(19.0, 4, 0.05, PICKS, "pick")                          # item fields
 for i in range(11): ev(20.5 + 0.045 * i * (1 + 0.04 * i), "count", "count", -0.2 * i)  # analytics counting, slowing
 ev(21.44, "lock")                                          # padlock closes
-ev(26.45, "swell"); ev(27.28, "haptic_light", None, -2)    # the site lifts off the stack, settles
+ev(26.72, "lift")                                          # the site lifts off the stack (soft, no whoosh)
 ev(28.72, "whoosh_2", "whoosh")                            # clear
-ev(29.02, "haptic"); ev(31.0, "haptic_double")             # pin lands, logo lands
+ev(29.02, "haptic"); ev(31.0, "haptic")             # pin lands, logo lands
 
 mix = load(f"{ROOT}/public/audio/mix.wav")
 layer = np.zeros_like(mix)

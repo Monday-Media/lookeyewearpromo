@@ -1,4 +1,4 @@
-# What is stood in (draft v4)
+# What is stood in (draft v5)
 
 - Wix dashboard: rebuilt from Paul's nine screenshots, not from Wix's code. Colours are sampled from the screenshots. Sizes and spacing are measured by eye.
 - Dashboard typeface: Wix Madefor Text. This looks right against the screenshots but has not been confirmed as the font Wix serves in the dashboard.
@@ -20,3 +20,6 @@
 - Closing stack (26.9 to 29.0): the site window with the dashboard home, the CMS table and the contacts beneath it. The arrangement is invented for the line "with nothing missing underneath".
 - End card (29.0 to 31.0): a pin and "perth wa" (Paul, 24 Nov; no Wix Studio logo). Set in Outfit, bold then light, lowercase and tight like the logo. Outfit is a near match by eye; the logo's own typeface has not been identified. Monday Media logo at 31.0.
 - Sound design (scripts/sfx.py): Flare haptic palette C2 plus four sounds made in code (lock, counter tick, draw tick, soft swell). Levels are measured, not heard.
+- 12.4 to 15.06 now shows the Profile page (top of the page only, ported from ProfileHeader and BrandStorySection) so the gallery is not repeated (Paul, 24 Nov).
+- End card: white pin and "Perth. WA" in Outfit bold (Paul, 24 Nov). This replaces the lowercase two-weight version.
+- Sound v5: all levels down 10 to 14 LU, first hover sound and the 13.5 whoosh removed, the stack lift is a soft tone not a swell, single haptic on the logo.
